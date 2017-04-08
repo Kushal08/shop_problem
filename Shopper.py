@@ -1,3 +1,4 @@
+# this is to read csv files
 import csv
 import sys
 
@@ -7,16 +8,22 @@ if __name__ == "__main__":
     f1 = open(sys.argv[1], 'rb')
     input_file = csv.reader(f1)
     
+    # creating an empty list here.
     l1 = []
     # taking inputs from the command line
     desired_product = sys.argv[2:]
+    # creating set of all desired product
     set_desired = set(desired_product)
     #print desired_product
-    years_dict = dict()
-    another_dict = dict()
+    
+	#defining three dictionaries to store products, price and desired shop and prices.
+    products_dict = dict()
+    price_dict = dict()
     final_dict = dict()
-    last_dict = dict()
+
     count = 0;
+    
+    # iterating over all the entries in the file.
     for line in input_file:
 
     # print row
@@ -24,31 +31,32 @@ if __name__ == "__main__":
     	#combo = set([s.strip() for s in line[2:]])
     	#print combo
     	
-  	if line[0] in years_dict:
+  	if line[0] in products_dict:
         # append the new number to- the existing array at this slot
-        	years_dict[line[0]].append(line[2].strip())
-        	#print years_dict
+        	products_dict[line[0]].append(line[2].strip())
+        	#print products_dict
     	else:
         # create a new array in this slot
-        	years_dict[line[0]]=[line[2].strip()]
+        	products_dict[line[0]]=[line[2].strip()]
 
- 	if line[0] in another_dict:
+ 	if line[0] in price_dict:
         # append the new number to the existing array at this slot
-    		another_dict[line[0]].append(float(line[1]))
+    		price_dict[line[0]].append(float(line[1]))
         	        	
     	else:
         # create a new array in this slot
-        	another_dict[line[0]]=[float(line[1])]
+        	price_dict[line[0]]=[float(line[1])]
 	
-	x =  sum(another_dict[line[0]])
-	final_dict[line[0]] = x
+	#x =  sum(price_dict[line[0]])
+	#final_dict[line[0]] = x
 
 
 
-	#print years_dict
+	#print products_dict
 	#print final_dict   
 
-    for k, v in years_dict.items():
+	# this is for finding those shops which have all the products one need.
+    for k, v in products_dict.items():
     		#print(k, v)
     		x1 = set(v)
     		#print x1
@@ -56,19 +64,22 @@ if __name__ == "__main__":
     		
     		if x1.intersection(set_desired) == set_desired:
     			l1.append(k)
-    		
-    			
     
-    min1 = final_dict['1']
-    
+    # checking whether the list l1 that contains all the shop numbers who have all desired products is empty or not		
     if not l1:
     	print "None"
-    else :
+    else:
+    				
     	for p in l1:
-    		if min1 > final_dict[p]:
-    			min1 = final_dict[p]
-        	        shop = p;
-                
-    	print "==> " + shop +", "+str(min1)
-    
-    			
+    		x4=0
+    		for q in desired_product:
+    			x3 = products_dict[p].index(q)
+    			x4 += price_dict[p][x3]
+		    	
+    		final_dict[p] = [float(x4)]
+    	#print final_dict	
+
+	# getting min price for a product corresponding to a shop
+		shop = min(final_dict, key=final_dict.get)
+    	print "==>"+shop+","+str(final_dict[shop])	
+   
